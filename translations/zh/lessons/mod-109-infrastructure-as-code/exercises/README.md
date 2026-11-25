@@ -9,12 +9,12 @@
 | 练习 | 主题 | 难度 | 时长 | 前置条件 |
 |---|---|---|---|---|
 | 01 | 部署 EC2 实例 | 初级 | 1–2 小时 | AWS 账号、已安装 Terraform |
-| 02 | 用于 ML 数据的 S3 存储桶 | 初级 | 1 小时 | 练习 01 |
-| 03 | 使用 Terraform 构建 GPU 集群 | 中级 | 2–3 小时 | 练习 01–02 |
+| 02 | ML 数据 S3 存储桶 | 初级 | 1 小时 | 练习 01 |
+| 03 | Terraform GPU 集群 | 中级 | 2–3 小时 | 练习 01–02 |
 | 04 | 可复用 Terraform 模块 | 中级 | 2–3 小时 | 练习 01–03 |
-| 05 | 使用 S3 后端的远程状态 | 中级 | 1–2 小时 | 练习 01–04 |
-| 06 | 使用 Pulumi 构建 ML 基础设施 | 中级 | 2–3 小时 | Python、已安装 Pulumi |
-| 07 | 使用 GitHub Actions 的 GitOps 工作流 | 高级 | 3–4 小时 | GitHub 账号、Git 知识 |
+| 05 | S3 后端远程状态 | 中级 | 1–2 小时 | 练习 01–04 |
+| 06 | Pulumi ML 基础设施 | 中级 | 2–3 小时 | Python、已安装 Pulumi |
+| 07 | GitHub Actions GitOps 工作流 | 高级 | 3–4 小时 | GitHub 账号、Git 知识 |
 | 08 | 密钥管理 | 高级 | 2–3 小时 | AWS Secrets Manager 知识 |
 
 **预计总时长（原文）：** 15–21 小时。
@@ -26,7 +26,7 @@
 ### 所需账号
 
 - **AWS 账号**——符合免费层资格（注册：https://aws.amazon.com/free/）。
-- **GitHub 账号**——用于练习 07（https://github.com/ 免费注册）。
+- **GitHub 账号**——用于练习 07（免费注册：https://github.com/）。
 
 ### 所需工具
 
@@ -81,13 +81,13 @@ aws sts get-caller-identity
 
 ### 步骤
 
-1. **创建项目目录。**
+1. **创建项目目录**
    ```bash
    mkdir exercise-01-ec2
    cd exercise-01-ec2
    ```
 
-2. **创建 versions.tf。**
+2. **创建 versions.tf**
    ```hcl
    terraform {
      required_version = ">= 1.0"
@@ -101,7 +101,7 @@ aws sts get-caller-identity
    }
    ```
 
-3. **创建 main.tf。**
+3. **创建 main.tf**
    ```hcl
    provider "aws" {
      region = "us-west-2"
@@ -156,7 +156,7 @@ aws sts get-caller-identity
    }
    ```
 
-4. **创建 outputs.tf。**
+4. **创建 outputs.tf**
    ```hcl
    output "instance_id" {
      description = "ID of the EC2 instance"
@@ -174,7 +174,7 @@ aws sts get-caller-identity
    }
    ```
 
-5. **创建 .gitignore。**
+5. **创建 .gitignore**
    ```
    .terraform/
    *.tfstate
@@ -182,7 +182,7 @@ aws sts get-caller-identity
    .terraform.lock.hcl
    ```
 
-6. **部署。**
+6. **部署**
    ```bash
    # Initialize Terraform
    terraform init
@@ -214,41 +214,41 @@ aws sts get-caller-identity
 ### 挑战任务
 
 - [ ] 添加密钥对，启用 SSH 访问。
-- [ ] 将实例类型改为 t3.small，重新应用配置。
-- [ ] 添加 User Data，启动时安装 nginx。
-- [ ] 添加多条安全组规则（HTTP、HTTPS）。
-- [ ] 使用姓名及日期标记资源。
+- [ ] 将实例类型改为 t3.small，并重新 Apply。
+- [ ] 添加 User Data，在启动时安装 nginx。
+- [ ] 添加多个安全组规则（HTTP、HTTPS）。
+- [ ] 使用姓名与日期标记资源。
 
 ### 预期结果
 
 - 成功创建 EC2 实例。
 - 已关联安全组。
-- 输出公共 IP 地址。
-- 可以通过 SSH 访问实例（如果配置了密钥）。
-- 在本地创建 Terraform 状态文件。
+- 已输出公网 IP 地址。
+- 可以通过 SSH 连接实例（如果配置密钥）。
+- 本地已创建 Terraform 状态文件。
 
 ---
 
 ## 练习 02：用于 ML 数据的 S3 存储桶
 
-**目标：** 创建具有合适配置的 S3 存储桶，用于 ML 数据集及模型。
+**目标：** 为 ML 数据集与模型创建配置适当的 S3 存储桶。
 
 ### 学习目标
 
-- 为 S3 存储桶配置生命周期策略。
+- 配置具有生命周期策略的 S3 存储桶。
 - 为模型存储启用版本管理。
 - 设置存储桶加密。
 - 使用变量进行配置。
 
 ### 步骤
 
-1. **创建项目目录。**
+1. **创建项目目录**
    ```bash
    mkdir exercise-02-s3
    cd exercise-02-s3
    ```
 
-2. **创建 variables.tf。**
+2. **创建 variables.tf**
    ```hcl
    variable "project_name" {
      description = "Name of the ML project"
@@ -263,7 +263,7 @@ aws sts get-caller-identity
    }
    ```
 
-3. **创建 main.tf。**
+3. **创建 main.tf**
    ```hcl
    provider "aws" {
      region = "us-west-2"
@@ -357,7 +357,7 @@ aws sts get-caller-identity
    }
    ```
 
-4. **创建 outputs.tf。**
+4. **创建 outputs.tf**
    ```hcl
    output "datasets_bucket_name" {
      description = "Name of the datasets S3 bucket"
@@ -378,7 +378,7 @@ aws sts get-caller-identity
    }
    ```
 
-5. **部署。**
+5. **部署**
    ```bash
    terraform init
    terraform plan
@@ -398,17 +398,17 @@ aws sts get-caller-identity
 
 ### 挑战任务
 
-- [ ] 添加第三个存储桶，用于已处理数据/特征数据。
+- [ ] 为已处理数据/特征数据添加第三个存储桶。
 - [ ] 实现 S3 存储桶日志记录。
-- [ ] 为 Web 访问添加 CORS 配置。
+- [ ] 添加面向 Web 访问的 CORS 配置。
 - [ ] 创建用于存储桶访问的 IAM 策略文档。
 - [ ] 添加生命周期规则，在 180 天后删除旧模型版本。
 
 ### 预期结果
 
-- 已创建两个 S3 存储桶（数据集、模型）。
+- 创建两个 S3 存储桶（数据集、模型）。
 - 两个存储桶均启用版本管理。
-- 模型存储桶已启用加密。
+- 模型存储桶启用加密。
 - 已应用生命周期策略。
 - 已阻止公共访问。
 
@@ -416,24 +416,24 @@ aws sts get-caller-identity
 
 ## 练习 03：使用 Terraform 构建 GPU 集群
 
-**目标：** 供应具有合适网络及 IAM 配置的小型 GPU 训练集群。
+**目标：** 创建具有适当网络及 IAM 配置的小型 ML 训练 GPU 集群。
 
 ### 学习目标
 
 - 配置 VPC 与子网。
 - 创建 GPU 实例（p3 系列）。
-- 搭建 IAM 角色及实例配置文件。
+- 搭建 IAM 角色与 Instance Profile。
 - 使用 count 创建多个实例。
 
 ### 步骤
 
-1. **创建项目目录。**
+1. **创建项目目录**
    ```bash
    mkdir exercise-03-gpu-cluster
    cd exercise-03-gpu-cluster
    ```
 
-2. **创建 variables.tf。**
+2. **创建 variables.tf**
    ```hcl
    variable "region" {
      type    = string
@@ -453,7 +453,7 @@ aws sts get-caller-identity
    }
    ```
 
-3. **创建 main.tf（部分实现，在练习中完成）。**
+3. **创建 main.tf**（部分实现，需在练习中补齐）
    ```hcl
    provider "aws" {
      region = var.region
@@ -500,14 +500,14 @@ aws sts get-caller-identity
    }
    ```
 
-4. **完成实现。**
+4. **完成实现**
    - 添加子网创建。
-   - 添加 Internet Gateway 及路由。
-   - 创建安全组（SSH、集群节点间通信）。
+   - 添加 Internet Gateway 与路由。
+   - 创建安全组（SSH、集群内通信）。
    - 创建具备 S3 访问权限的 IAM 角色。
-   - 将 IAM 实例配置文件关联到实例。
+   - 将 IAM Instance Profile 关联至实例。
 
-5. **部署并测试。**
+5. **部署并测试**
    ```bash
    terraform init
    terraform plan
@@ -528,18 +528,18 @@ aws sts get-caller-identity
 - [ ] 使用 Spot 实例降低成本。
 - [ ] 添加 EFS，实现集群节点间共享存储。
 - [ ] 配置实例在 2 小时后自动关闭。
-- [ ] 添加 GPU 利用率 CloudWatch 告警。
-- [ ] 创建堡垒机，实现安全 SSH 访问。
+- [ ] 为 GPU 利用率添加 CloudWatch 告警。
+- [ ] 创建 Bastion Host，实现安全 SSH 访问。
 
 ### 预期结果
 
 - 已创建 VPC 与网络。
-- 两个 GPU 实例正在运行。
+- 2 个 GPU 实例正在运行。
 - 已关联 IAM 角色。
-- 实例之间能够通信。
+- 实例可以相互通信。
 - 已配置 SSH 访问。
 
-**费用警告：** 原文示例 p3.2xlarge 约为每小时 3.06 美元。记得销毁实验资源！
+**费用警告：** 原文示例 p3.2xlarge 约为每小时 3.06 美元。记得清理资源！
 
 ---
 
@@ -556,13 +556,13 @@ aws sts get-caller-identity
 
 ### 步骤
 
-1. **创建项目结构。**
+1. **创建项目结构**
    ```bash
    mkdir -p exercise-04-modules/{modules/{s3-ml-bucket,gpu-instance},environments/{dev,prod}}
    cd exercise-04-modules
    ```
 
-2. **创建 S3 模块（`modules/s3-ml-bucket/main.tf`）。**
+2. **创建 S3 模块**（`modules/s3-ml-bucket/main.tf`）
    ```hcl
    variable "bucket_name" {
      type = string
@@ -607,7 +607,7 @@ aws sts get-caller-identity
    }
    ```
 
-3. **创建 GPU 实例模块（`modules/gpu-instance/main.tf`）。**
+3. **创建 GPU 实例模块**（`modules/gpu-instance/main.tf`）
    ```hcl
    variable "instance_type" {
      type = string
@@ -640,7 +640,7 @@ aws sts get-caller-identity
    }
    ```
 
-4. **在环境中使用模块。**
+4. **在环境中使用模块**
 
    **environments/dev/main.tf：**
    ```hcl
@@ -700,7 +700,7 @@ aws sts get-caller-identity
    data "aws_caller_identity" "current" {}
    ```
 
-5. **部署。**
+5. **部署**
    ```bash
    # Dev environment
    cd environments/dev
@@ -720,34 +720,34 @@ aws sts get-caller-identity
 ### 挑战任务
 
 - [ ] 使用 Git Tag 管理模块版本。
-- [ ] 为每个模块创建带用法示例的 README.md。
+- [ ] 为每个模块创建包含使用示例的 README.md。
 - [ ] 将模块发布至私有 Terraform Registry。
-- [ ] 添加模块输入验证。
+- [ ] 为模块输入添加验证。
 - [ ] 创建完整 ML 平台模块（VPC + GPU + S3）。
 
 ### 预期结果
 
 - 已创建两个可复用模块。
 - 在多个环境中使用模块。
-- 每个环境采用不同配置。
-- 应用了 DRY 原则。
+- 各环境配置不同。
+- 遵循 DRY 原则。
 
 ---
 
-## 练习 05：使用 S3 后端的远程状态
+## 练习 05：使用 S3 后端实现远程状态
 
-**目标：** 配置远程状态存储，实现团队协作。
+**目标：** 配置远程状态存储，支持团队协作。
 
 ### 学习目标
 
 - 搭建用于状态存储的 S3 后端。
 - 使用 DynamoDB 配置状态锁。
 - 启用状态加密。
-- 将本地状态迁移至远程状态。
+- 从本地状态迁移至远程状态。
 
 ### 步骤
 
-1. **创建状态后端基础设施。**
+1. **创建状态后端基础设施**
 
    **backend-setup/main.tf：**
    ```hcl
@@ -823,7 +823,7 @@ aws sts get-caller-identity
    }
    ```
 
-2. **部署后端基础设施。**
+2. **部署后端基础设施**
    ```bash
    cd backend-setup
    terraform init
@@ -831,7 +831,7 @@ aws sts get-caller-identity
    # Note the output values
    ```
 
-3. **创建使用远程状态的项目。**
+3. **创建使用远程状态的项目**
 
    **project/backend.tf：**
    ```hcl
@@ -859,7 +859,7 @@ aws sts get-caller-identity
    data "aws_caller_identity" "current" {}
    ```
 
-4. **初始化并测试。**
+4. **初始化并测试**
    ```bash
    cd project
    terraform init  # Will configure S3 backend
@@ -874,25 +874,25 @@ aws sts get-caller-identity
 
 ### 挑战任务
 
-- [ ] 将现有本地状态迁移至远程后端。
+- [ ] 将已有本地状态迁移至远程后端。
 - [ ] 为多个环境（开发、预发布、生产）搭建后端。
 - [ ] 配置使用远程状态的 Workspace。
 - [ ] 为旧状态版本添加 S3 生命周期策略。
-- [ ] 创建用于最小权限状态访问的 IAM 策略。
+- [ ] 创建最小权限状态访问 IAM 策略。
 
 ### 预期结果
 
 - 已创建用于状态存储的 S3 存储桶。
-- 已创建用于锁定的 DynamoDB 表。
+- 已创建用于状态锁的 DynamoDB 表。
 - 已启用状态加密。
-- 状态存储于远程后端。
+- 状态存储在远程。
 - 状态锁防止并发修改。
 
 ---
 
 ## 练习 06：使用 Pulumi（Python）构建 ML 基础设施
 
-**目标：** 使用 Pulumi 与 Python 代替 Terraform，构建相同的 ML 基础设施。
+**目标：** 使用 Pulumi 与 Python 代替 Terraform，构建同样的 ML 基础设施。
 
 ### 学习目标
 
@@ -903,7 +903,7 @@ aws sts get-caller-identity
 
 ### 步骤
 
-1. **安装 Pulumi。**
+1. **安装 Pulumi**
    ```bash
    brew install pulumi  # macOS
    # or: curl -fsSL https://get.pulumi.com | sh
@@ -912,7 +912,7 @@ aws sts get-caller-identity
    pulumi login
    ```
 
-2. **创建新的 Pulumi 项目。**
+2. **创建新 Pulumi 项目**
    ```bash
    mkdir exercise-06-pulumi
    cd exercise-06-pulumi
@@ -925,7 +925,7 @@ aws sts get-caller-identity
    # - aws:region: us-west-2
    ```
 
-3. **编辑 `__main__.py`。**
+3. **编辑 `__main__.py`**
    ```python
    import pulumi
    import pulumi_aws as aws
@@ -1002,7 +1002,7 @@ aws sts get-caller-identity
    pulumi.export("instance_ips", [inst.public_ip for inst in gpu_instances])
    ```
 
-4. **部署。**
+4. **部署**
    ```bash
    # Preview changes
    pulumi preview
@@ -1023,33 +1023,33 @@ aws sts get-caller-identity
 - [ ] 使用 Pulumi 添加 IAM 角色。
 - [ ] 创建生成标签的 Python 函数。
 - [ ] 使用 Python 字典配置多个环境。
-- [ ] 比较 Pulumi 与 Terraform 的状态管理。
-- [ ] 将练习 03（GPU 集群）转换为 Pulumi 实现。
+- [ ] 比较 Pulumi 与 Terraform 状态管理。
+- [ ] 将练习 03（GPU 集群）转换为 Pulumi。
 
 ### 预期结果
 
 - 已创建 Pulumi 项目。
 - 使用 Python 定义基础设施。
-- 已创建 S3 存储桶及 EC2 实例。
-- Pulumi 状态保存于 Pulumi Service。
+- 已创建 S3 存储桶与 EC2 实例。
+- Pulumi 状态保存在 Pulumi Service。
 - 完成 Pulumi 与 Terraform 工作流比较。
 
 ---
 
-## 练习 07：使用 GitHub Actions 的 GitOps 工作流
+## 练习 07：使用 GitHub Actions 实现 GitOps 工作流
 
-**目标：** 使用 GitHub Actions 实现自动化 Terraform 工作流，用于基础设施 CI/CD。
+**目标：** 使用 GitHub Actions 实现自动化 Terraform 工作流，支持基础设施 CI/CD。
 
 ### 学习目标
 
 - 为 Terraform 搭建 GitHub Actions。
-- 在 PR 中自动运行 Plan。
+- 在 PR 中实现自动化 Plan。
 - 添加安全扫描（tfsec）。
 - 合并至 main 时自动 Apply。
 
 ### 步骤
 
-1. **创建 GitHub 仓库。**
+1. **创建 GitHub 仓库**
    ```bash
    mkdir exercise-07-gitops
    cd exercise-07-gitops
@@ -1057,9 +1057,9 @@ aws sts get-caller-identity
    gh repo create exercise-07-gitops --private
    ```
 
-2. **添加 Terraform 代码（复用练习 02）。**
+2. **添加 Terraform 代码**（复用练习 02）。
 
-3. **创建 GitHub Actions 工作流。**
+3. **创建 GitHub Actions 工作流**
 
    **.github/workflows/terraform.yml：**
    ```yaml
@@ -1155,12 +1155,12 @@ aws sts get-caller-identity
            run: terraform apply -auto-approve
    ```
 
-4. **将 AWS 凭据添加至 GitHub Secrets。**
-   - 前往仓库 Settings → Secrets → Actions。
+4. **将 AWS 凭据添加至 GitHub Secrets**
+   - 进入仓库 Settings → Secrets → Actions。
    - 添加 `AWS_ACCESS_KEY_ID`。
    - 添加 `AWS_SECRET_ACCESS_KEY`。
 
-5. **测试工作流。**
+5. **测试工作流**
    ```bash
    # Create feature branch
    git checkout -b add-bucket
@@ -1186,17 +1186,17 @@ aws sts get-caller-identity
 
 ### 挑战任务
 
-- [ ] 添加 Infracost，在 PR 中展示成本估算。
-- [ ] 添加 Checkov，提供额外安全扫描。
-- [ ] 实现生产部署审批要求。
-- [ ] 添加定时漂移检测工作流。
+- [ ] 添加 Infracost，在 PR 中展示费用估算。
+- [ ] 添加 Checkov，进行额外安全扫描。
+- [ ] 为生产部署实施审批要求。
+- [ ] 添加定期漂移检测工作流。
 - [ ] 为多个环境创建独立工作流。
 
 ### 预期结果
 
 - 已创建 GitHub Actions 工作流。
-- Terraform Plan 在 PR 时运行。
-- 在 PR 中评论 Plan 输出。
+- PR 中运行 Terraform Plan。
+- Plan 输出作为评论发布到 PR。
 - 使用 tfsec 进行安全扫描。
 - 合并至 main 时运行 Terraform Apply。
 
@@ -1204,17 +1204,17 @@ aws sts get-caller-identity
 
 ## 练习 08：使用 AWS Secrets Manager 管理密钥
 
-**目标：** 使用 AWS Secrets Manager 与 IAM 角色安全管理 Terraform 中的密钥。
+**目标：** 使用 AWS Secrets Manager 与 IAM 角色，在 Terraform 中安全管理密钥。
 
 ### 步骤
 
-1. **创建项目。**
+1. **创建项目**
    ```bash
    mkdir exercise-08-secrets
    cd exercise-08-secrets
    ```
 
-2. **创建包含密钥相关配置的 main.tf。**
+2. **创建包含密钥管理的 main.tf**
    ```hcl
    provider "aws" {
      region = "us-west-2"
@@ -1315,7 +1315,7 @@ aws sts get-caller-identity
    }
    ```
 
-3. **添加 pre-commit Hook，防止提交密钥。**
+3. **添加 pre-commit Hook，防止提交密钥**
 
    **.pre-commit-config.yaml：**
    ```yaml
@@ -1338,7 +1338,7 @@ aws sts get-caller-identity
    pre-commit run --all-files
    ```
 
-4. **部署并测试。**
+4. **部署并测试**
    ```bash
    terraform init
    terraform apply
@@ -1358,36 +1358,36 @@ aws sts get-caller-identity
 - [ ] 使用 Lambda 自动轮换密钥。
 - [ ] 使用 HashiCorp Vault 替代 AWS Secrets Manager。
 - [ ] 实现密钥版本管理策略。
-- [ ] 添加密钥访问监控。
+- [ ] 为密钥访问添加监控。
 - [ ] 为多环境配置创建密钥。
 
 ### 预期结果
 
-- 已在 AWS Secrets Manager 中创建密钥。
-- IAM 角色提供最小权限访问。
-- Terraform 中不硬编码密钥。
-- pre-commit Hook 有助于防止提交密钥。
-- 应用在运行时获取密钥。
+- 已在 AWS Secrets Manager 创建密钥。
+- IAM 角色授予最小权限访问。
+- 不在 Terraform 中硬编码密钥。
+- pre-commit Hook 防止提交密钥。
+- 应用程序在运行时获取密钥。
 
 ---
 
 ## 最终项目：完整 ML 平台
 
-**目标：** 将全部练习组合为面向生产的 ML 平台。
+**目标：** 将全部练习组合成面向生产的 ML 平台。
 
 ### 需求
 
 - [ ] 多环境配置（开发、预发布、生产）。
-- [ ] 具备自动扩缩容的 GPU 训练集群。
+- [ ] 支持自动扩缩容的 GPU 训练集群。
 - [ ] 用于数据、模型、日志的 S3 存储桶。
-- [ ] 合适的 VPC、子网、安全组。
+- [ ] 合理的 VPC、子网、安全组。
 - [ ] 最小权限 IAM 角色。
 - [ ] 密钥管理。
-- [ ] 具备锁定机制的远程状态。
+- [ ] 带状态锁的远程状态。
 - [ ] 可复用模块。
 - [ ] 使用 GitHub Actions 的 GitOps 工作流。
 - [ ] 安全扫描（tfsec、Checkov）。
-- [ ] 成本估算（Infracost）。
+- [ ] 费用估算（Infracost）。
 - [ ] 监控与日志。
 - [ ] 文档。
 
@@ -1406,6 +1406,6 @@ aws sts get-caller-identity
 
 **恭喜完成基础设施即代码练习！**
 
-返回[模块 README](../README.md)，继续测验及后续学习。
+返回[模块 README](../README.md)，查看测验与下一步。
 
-> 译注：本目录为原文独立练习集，与仓库编号项目不完全对应。较新 Terraform 支持 S3 原生锁文件；CI 优先使用 OIDC 短期凭据，而不是长期 AWS Access Key。状态文件仍可能包含敏感值，pre-commit 无法保证不泄漏密钥。所有云资源费用及免费层资格应实际核对。原始代码块保留，未执行云部署。
+> 译注：此目录内八项独立练习不同于仓库编号实践项目。价格与免费层仅为原文示例。较新 Terraform 支持 S3 锁文件，CI 建议使用 OIDC 短期凭据而非长期 AWS Key。不要公开敏感 Plan 或状态文件，删除资源前确认环境与依赖，密钥管理需避免明文进入状态。原始代码块及 TODO 保留，未执行云操作。
