@@ -1,4 +1,4 @@
-# 第 07 课：Docker 中的 GPU 支持
+# 第 07 课：Docker 的 GPU 支持
 
 **时长：** 5 小时
 **目标：** 在 Docker 容器中运行 GPU 加速的机器学习工作负载。
@@ -7,33 +7,33 @@
 
 完成本课后，你将能够：
 
-1. 安装及配置 NVIDIA Container Toolkit。
+1. 安装并配置 NVIDIA Container Toolkit。
 2. 运行 GPU 加速容器。
 3. 使用支持 CUDA 的基础镜像。
-4. 将指定 GPU 分配至容器。
+4. 将特定 GPU 分配给容器。
 5. 监控容器化工作负载的 GPU 使用情况。
 6. 部署多 GPU 训练容器。
-7. 排查常见的 GPU 容器问题。
+7. 排查常见 GPU 容器问题。
 
 ## 为什么使用 GPU 容器？
 
 ### 挑战
 
-机器学习训练与推理经常需要 GPU 才能达到可接受的性能。原文给出以下示例：
+机器学习训练与推理往往需要 GPU 才能达到可接受的性能：
 
-- **训练：** GPU 相比 CPU 快 100 倍。
-- **推理：** 对大型模型快 10–50 倍。
-- **成本：** 更具成本效益（执行速度更快可能降低云计算费用）。
+- **训练：** 原文举例 GPU 比 CPU 快 100 倍。
+- **推理：** 大型模型可能快 10–50 倍（原文示例）。
+- **成本：** 具有潜在成本优势（更快完成工作，可能降低云账单）。
 
-**但 GPU 增加了复杂度：**
-- CUDA Toolkit 版本必须与驱动兼容。
-- 库依赖容易发生冲突。
+**但 GPU 也增加了复杂度：**
+- CUDA 驱动需要与工具包版本兼容。
+- 库依赖关系较为脆弱。
 - GPU 资源需要谨慎分配。
 - 环境配置容易出错。
 
 ### 解决方案：GPU 容器
 
-支持 GPU 的 Docker 容器有助于解决这些问题：
+支持 GPU 的 Docker 容器可以缓解这些问题：
 
 ```
 ┌──────────────────────────────────────────────┐
@@ -52,7 +52,7 @@
 **实际影响（原文示例）：**
 - 配置时间：2–3 小时 → 5 分钟。
 - 一致性：减少「在我的电脑上能运行」的问题。
-- 资源利用率：40% → 80% 以上（改善 GPU 共享）。
+- 资源利用率：40% → 80% 以上（更合理的 GPU 共享）。
 
 ## NVIDIA Container Toolkit
 
@@ -87,9 +87,9 @@
 ```
 
 **关键组件：**
-1. **NVIDIA 驱动**——安装在宿主机操作系统（例如 525.125.06）。
+1. **NVIDIA 驱动**——安装在宿主机操作系统中（例如 525.125.06）。
 2. **NVIDIA Container Toolkit**——使 Docker 容器能够访问 GPU。
-3. **CUDA 库**——位于容器内部，可以采用不同的兼容版本。
+3. **CUDA 库**——位于容器内（可以采用与宿主机工具包不同的兼容版本）。
 
 ### 安装
 
@@ -149,7 +149,7 @@ docker run --rm --gpus '"device=0"' nvidia/cuda:12.1.0-base-ubuntu22.04 nvidia-s
 docker run --rm --gpus '"device=0,2"' nvidia/cuda:12.1.0-base-ubuntu22.04 nvidia-smi
 ```
 
-### GPU 参数说明
+### GPU 参数详解
 
 ```bash
 # All GPUs
@@ -185,10 +185,10 @@ nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu20.04
 
 | 变体 | 大小 | 包含内容 | 使用场景 |
 |---|---|---|---|
-| **base** | 约 200MB | 基础 CUDA 运行库 | 最小 GPU 访问环境 |
-| **runtime** | 约 1.5GB | CUDA 运行库及其他库 | 推理 |
-| **devel** | 约 3.5GB | Runtime、编译器、头文件 | 需要编译的训练及源码构建 |
-| **cudnn** | 不定 | 额外包含 cuDNN（深度学习库） | 深度学习工作负载 |
+| **base** | 约 200MB | 基础 CUDA 运行时 | 最小 GPU 访问需求 |
+| **runtime** | 约 1.5GB | CUDA 运行时及库 | 推理 |
+| **devel** | 约 3.5GB | 运行时、编译器与头文件 | 训练、从源码构建 |
+| **cudnn** | 不固定 | 额外包含 cuDNN（深度学习） | 深度学习工作负载 |
 
 ### 选择合适的镜像
 
@@ -247,7 +247,7 @@ ENV PYTHONUNBUFFERED=1
 CMD ["python3", "train.py"]
 ```
 
-**构建及运行：**
+**构建与运行：**
 ```bash
 # Build
 docker build -t pytorch-gpu:v1 .
@@ -348,9 +348,9 @@ docker run -d --name worker2 --gpus '"device=1"' pytorch-gpu:v1
 docker run -d --name worker3 --gpus '"device=2,3"' pytorch-gpu:v1
 ```
 
-### GPU 共享（MIG，多实例 GPU）
+### GPU 共享（MIG——Multi-Instance GPU，多实例 GPU）
 
-以 NVIDIA A100/H100 GPU 为例：
+针对支持 MIG 的 NVIDIA A100/H100 GPU：
 
 ```bash
 # Enable MIG mode (requires reboot)
@@ -363,11 +363,9 @@ sudo nvidia-smi mig -cgi 9,9,9,9  # 4 instances
 docker run --rm --gpus '"device=0:0"' pytorch-gpu:v1
 ```
 
-> 译注：Docker 的 GPU 设备分配通常不等于显存硬隔离。框架的显存限制可能只约束其自身分配器；MIG 能否使用、支持哪些实例规格取决于 GPU 型号、驱动和配置。
-
 ## 监控 GPU 使用情况
 
-### 在容器中使用 nvidia-smi
+### 容器中的 nvidia-smi
 
 ```bash
 # Install nvidia-smi in container
@@ -392,7 +390,7 @@ docker run -d \
 curl http://localhost:9400/metrics | grep gpu
 ```
 
-### 使用 Python 监控
+### Python 监控
 
 **monitor_gpu.py：**
 ```python
@@ -470,7 +468,7 @@ CMD ["python3", "-m", "torch.distributed.launch", \
      "--nproc_per_node=auto", "train_ddp.py"]
 ```
 
-## 使用 Docker Compose 配置 GPU
+## 支持 GPU 的 Docker Compose
 
 **docker-compose.yml：**
 ```yaml
@@ -541,7 +539,7 @@ FROM nvidia/cuda:12.1.0-cudnn8-runtime-ubuntu22.04
 RUN pip install torch --index-url https://download.pytorch.org/whl/cu121
 ```
 
-### 问题 2：GPU 不可见
+### 问题 2：无法识别 GPU
 
 **错误：**
 ```
@@ -563,7 +561,7 @@ docker run --gpus all ...  # Don't forget this!
 docker run --rm --gpus all nvidia/cuda:12.1.0-base nvidia-smi
 ```
 
-### 问题 3：显存不足（OOM）
+### 问题 3：显存不足
 
 **错误：**
 ```
@@ -641,9 +639,9 @@ class DataLoaderX(DataLoader):
 
 1. 用于训练的多阶段 Dockerfile。
 2. 数据预处理容器。
-3. 配备 GPU 的训练容器。
+3. 具有 GPU 支持的训练容器。
 4. 模型导出容器。
-5. 使用 Docker Compose 进行编排。
+5. 使用 Docker Compose 编排。
 
 ### 项目结构
 
@@ -827,14 +825,14 @@ torch.onnx.export(model, dummy, out / "model.onnx", opset_version=17)
 print("export: wrote /artifacts/model.onnx")
 ```
 
-运行完整流水线：
+使用以下命令运行完整流水线：
 
 ```bash
 docker compose build
 docker compose up --abort-on-container-exit
 ```
 
-train 服务通过 nvidia 驱动请求一块 GPU。使用 `docker compose run train nvidia-smi` 验证容器内 GPU 的可见性。
+train 服务通过 nvidia 驱动请求一块 GPU。使用 `docker compose run train nvidia-smi` 验证容器内是否能够识别 GPU。
 
 ## 总结
 
@@ -843,19 +841,19 @@ train 服务通过 nvidia 驱动请求一块 GPU。使用 `docker compose run tr
 1. **NVIDIA Container Toolkit**——安装与配置。
 2. **GPU 容器**——在 Docker 中运行 CUDA 工作负载。
 3. **CUDA 基础镜像**——选择 base、runtime、devel、cudnn 变体。
-4. **GPU 分配**——将特定 GPU 分配至容器。
-5. **监控**——使用 nvidia-smi、DCGM 获取 GPU 指标。
+4. **GPU 分配**——将特定 GPU 映射到容器。
+5. **监控**——通过 nvidia-smi、DCGM 获取 GPU 指标。
 6. **多 GPU**——数据并行与分布式训练。
-7. **故障排查**——常见问题及解决方案。
+7. **故障排查**——常见问题与解决方案。
 
 **核心要点：**
-- GPU 容器有助于减少驱动与 CUDA 环境配置冲突。
-- 推理使用 runtime 镜像；需要开发或编译工具的训练使用 devel 镜像。
+- GPU 容器能够减少环境依赖及 CUDA 版本冲突。
+- 推理通常使用 runtime 镜像，需要编译工具时使用 devel 镜像（原文建议训练使用 devel）。
 - 监控 GPU 利用率，识别瓶颈。
 - 在多 GPU 系统中显式分配 GPU。
-- 确保基础镜像与框架的 CUDA 版本兼容。
+- 确保基础镜像与框架所需的 CUDA 版本兼容。
 
-## 下一步是什么？
+## 下一步
 
 下一课 **08-production-best-practices.md** 将学习：
 - 容器安全最佳实践。
@@ -868,10 +866,10 @@ train 服务通过 nvidia 驱动请求一块 GPU。使用 `docker compose run tr
 
 ## 自我检查问题
 
-1. CUDA base、runtime、devel 镜像有什么区别？
-2. 如何运行一个只能访问 GPU 2 的容器？
-3. 什么原因会导致「CUDA version mismatch」错误？
-4. 如何监控运行中容器的 GPU 显存使用量？
+1. CUDA base、runtime 与 devel 镜像有什么区别？
+2. 如何运行一个仅能访问 GPU 2 的容器？
+3. 什么会导致「CUDA version mismatch」错误？
+4. 如何监控运行中容器的 GPU 显存使用情况？
 5. DataParallel 与 DistributedDataParallel 有什么区别？
 
 ## 补充资源
@@ -885,4 +883,4 @@ train 服务通过 nvidia 驱动请求一块 GPU。使用 `docker compose run tr
 
 **下一课：** [08-production-best-practices.md](./08-production-best-practices.md)
 
-> 译注：GPU 加速倍数、显存利用率和镜像大小均为原文示例，实际收益取决于模型、精度、批大小、硬件、数据加载与通信开销。容器无法消除宿主机驱动兼容性要求；训练也不一定需要 devel 镜像。全部原始代码块及内部英文注释保持不变，未逐项执行验证。
+> 译注：GPU 容器不会彻底消除宿主机驱动与容器 CUDA 的兼容性要求。容器的普通内存限制不是 GPU 显存硬限制，框架内存分配比例也不等于独占显存；如需更强的硬件级隔离，可在支持的设备上采用 MIG。GPU 加速比、资源利用率和镜像大小为原文示例，取决于工作负载、硬件及版本。原始代码块及其中的英文注释保持不变，安装和运行命令尚未逐项验证。
