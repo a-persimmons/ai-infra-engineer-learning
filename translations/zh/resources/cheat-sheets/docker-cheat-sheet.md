@@ -1,6 +1,6 @@
 # Docker 速查表
 
-常用 Docker 命令及最佳实践的快速参考。
+常用 Docker 命令与最佳实践快速参考。
 
 ---
 
@@ -260,7 +260,6 @@ docker-compose up --scale web=3
 ---
 
 ## 网络
-
 ```bash
 # List networks
 docker network ls
@@ -284,7 +283,6 @@ docker network rm mynetwork
 ---
 
 ## 数据卷
-
 ```bash
 # List volumes
 docker volume ls
@@ -311,7 +309,6 @@ docker run -v /host/path:/container/path:ro myimage:tag
 ---
 
 ## 调试
-
 ```bash
 # View container logs
 docker logs mycontainer
@@ -347,7 +344,6 @@ docker export mycontainer > container.tar
 ---
 
 ## 镜像仓库操作
-
 ```bash
 # Login to registry
 docker login myregistry.com
@@ -368,7 +364,6 @@ docker pull myregistry.com/myimage:tag
 ---
 
 ## 安全
-
 ```bash
 # Run container with limited resources
 docker run --memory="512m" --cpus="1.0" myimage:tag
@@ -389,7 +384,6 @@ docker run --cap-drop ALL --cap-add NET_BIND_SERVICE myimage:tag
 ---
 
 ## 实用单行命令
-
 ```bash
 # Stop all running containers
 docker stop $(docker ps -q)
@@ -417,16 +411,16 @@ docker stats --all --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}"
 
 ## 实用技巧
 
-1. **使用 .dockerignore** — 排除不必要的文件（如 .git、__pycache__）。
-2. **多阶段构建** — 减小最终镜像大小。
-3. **层缓存** — 按变更频率从低到高排列 Dockerfile 指令。
-4. **明确的标签** — 生产环境不要使用 :latest。
-5. **健康检查** — 在 Dockerfile 中加入 HEALTHCHECK。
-6. **非 root 用户** — 生产环境尽量使用非 root 用户运行。
-7. **资源限制** — 设置内存和 CPU 限制。
-8. **日志** — 使用 json-file 或 journald 日志驱动。
-9. **密钥** — 使用 Docker secrets 或环境变量（不要硬编码）。
-10. **扫描镜像** — 定期扫描漏洞。
+1. **使用 .dockerignore**：排除不必要文件（如 .git、__pycache__）。
+2. **多阶段构建**：减小最终镜像。
+3. **层缓存**：Dockerfile 指令按照从不常变化到频繁变化的顺序排列。
+4. **固定 Tag**：生产环境避免使用 :latest。
+5. **健康检查**：在 Dockerfile 添加 HEALTHCHECK。
+6. **非 root 用户**：生产环境使用非 root 用户运行。
+7. **资源限制**：设置内存及 CPU 限制。
+8. **日志**：使用 json-file 或 journald 日志驱动。
+9. **密钥**：使用 Docker Secret 或环境变量（不要硬编码）。
+10. **扫描镜像**：定期扫描漏洞。
 
 ---
 
@@ -435,4 +429,4 @@ docker stats --all --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}"
 - [Git 速查表](./git-cheat-sheet.md)
 - [Linux 命令速查表](./linux-cheat-sheet.md)
 
-> 译注：清理命令可能删除仍需要的镜像、容器或数据卷，请先确认影响范围；生产环境优先采用不可变镜像 digest 和专用密钥管理。
+> 译注：原始命令及英文代码注释保持原样。清理命令可能删除仍需使用的镜像、容器、数据卷，先核对资源。生产密钥优先使用专门的密钥管理机制，固定镜像 Digest 可进一步增强可复现性。

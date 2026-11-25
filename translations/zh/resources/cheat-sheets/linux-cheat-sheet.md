@@ -1,6 +1,6 @@
 # Linux 命令速查表
 
-基础设施工程师必备 Linux 命令的快速参考。
+基础设施工程师必备 Linux 命令快速参考。
 
 ---
 
@@ -66,7 +66,6 @@ find . -size +100M  # Files larger than 100MB
 ---
 
 ## 查看文件
-
 ```bash
 # View entire file
 cat file.txt
@@ -281,11 +280,11 @@ ls -l file.txt
 ```
 
 **权限数字：**
-- 4 = 读（r）
-- 2 = 写（w）
-- 1 = 执行（x）
-- 755 = rwxr-xr-x（所有者：rwx，组：r-x，其他：r-x）
-- 644 = rw-r--r--（所有者：rw，组：r，其他：r）
+- 4 = 读（r）。
+- 2 = 写（w）。
+- 1 = 执行（x）。
+- 755 = rwxr-xr-x（所有者 rwx，组 r-x，其他用户 r-x）。
+- 644 = rw-r--r--（所有者 rw，组 r，其他用户 r）。
 
 ---
 
@@ -340,7 +339,7 @@ renice -n 5 -p PID  # Change priority
 
 ## 磁盘与存储
 
-### 磁盘使用量
+### 磁盘用量
 ```bash
 # Disk space usage
 df -h
@@ -424,7 +423,7 @@ curl https://api.example.com
 
 ---
 
-## 包管理
+## 软件包管理
 
 ### Debian/Ubuntu（apt）
 ```bash
@@ -475,7 +474,6 @@ yum info package_name
 ---
 
 ## SSH 与远程访问
-
 ```bash
 # Connect to remote host
 ssh user@host
@@ -506,7 +504,6 @@ ssh-copy-id user@host
 ---
 
 ## 系统信息
-
 ```bash
 # System info
 uname -a  # All info
@@ -544,7 +541,6 @@ tail -f /var/log/syslog
 ---
 
 ## 实用单行命令
-
 ```bash
 # Find and delete files older than 30 days
 find /path -type f -mtime +30 -delete
@@ -587,7 +583,6 @@ find /path -type l ! -exec test -e {} \; -print
 ---
 
 ## 性能监控
-
 ```bash
 # CPU usage
 top
@@ -614,21 +609,21 @@ dstat
 
 ## 实用技巧
 
-1. **Tab 补全** — 按 Tab 自动补全路径和命令。
-2. **使用历史记录** — 按向上箭头或执行 `history` 查看历史命令。
-3. **反向搜索** — 按 `Ctrl+R` 搜索命令历史。
-4. **别名** — 添加至 `~/.bashrc`：
+1. **Tab 自动补全**：按 Tab 补全路径及命令。
+2. **命令历史**：按上箭头或使用 history 查看以前的命令。
+3. **反向搜索**：按 Ctrl+R 搜索命令历史。
+4. **别名**：添加至 ~/.bashrc：
    ```bash
    alias ll='ls -lah'
    alias df='df -h'
    alias free='free -h'
    ```
-5. **使用 man 手册** — `man command` 查看详细文档。
-6. **使用 tldr** — 安装 tldr 获取简化的命令手册。
-7. **管道组合命令** — `ps aux | grep python | grep -v grep`。
-8. **重定向输出** — `command > file.txt`（覆盖）或 `>>`（追加）。
-9. **后台任务** — 添加 `&` 在后台运行。
-10. **Screen/tmux** — 用于持久会话。
+5. **使用 man 手册**：man command 查看详细文档。
+6. **使用 tldr**：安装 tldr 查看简明手册。
+7. **管道命令**：组合命令，如 `ps aux | grep python | grep -v grep`。
+8. **重定向输出**：command > file.txt（覆盖），或使用 >>（追加）。
+9. **后台任务**：增加 & 在后台运行。
+10. **Screen/tmux**：保持会话持续运行。
 
 ---
 
@@ -637,4 +632,4 @@ dstat
 - [Kubernetes 速查表](./kubernetes-cheat-sheet.md)
 - [Git 速查表](./git-cheat-sheet.md)
 
-> 译注：删除文件、变更权限、终止进程和挂载磁盘之前，应确认目标及影响范围，特别是在生产环境。
+> 译注：原始命令及英文注释保留。删除、格式化、权限修改、进程终止等操作前确认目标及影响，避免直接在生产执行。

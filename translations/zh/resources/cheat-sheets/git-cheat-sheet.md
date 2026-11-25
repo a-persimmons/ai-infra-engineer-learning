@@ -1,10 +1,10 @@
 # Git 速查表
 
-常用 Git 命令和工作流程的快速参考。
+常用 Git 命令与工作流快速参考。
 
 ---
 
-## 快速开始
+## 入门
 
 ### 配置
 ```bash
@@ -332,8 +332,7 @@ git clean -fdx
 
 ---
 
-## 标签
-
+## Tag 管理
 ```bash
 # List tags
 git tag
@@ -430,7 +429,6 @@ git cherry-pick <commit1>..<commit2>
 ---
 
 ## 搜索
-
 ```bash
 # Search in files
 git grep "search term"
@@ -450,7 +448,7 @@ git log --grep="search term"
 
 ---
 
-## 实用工作流程
+## 实用工作流
 
 ### 功能分支工作流
 ```bash
@@ -499,7 +497,6 @@ git branch -d hotfix/critical-bug
 ---
 
 ## 实用单行命令
-
 ```bash
 # Undo last commit (keep changes)
 git reset --soft HEAD~1
@@ -584,7 +581,7 @@ git pull --rebase origin main
     amend = commit --amend --no-edit
 ```
 
-### .gitignore 常用模式
+### .gitignore 常见规则
 ```
 # Python
 __pycache__/
@@ -614,16 +611,16 @@ build/
 ```
 
 ### 最佳实践
-1. **经常提交** — 小而有逻辑的提交。
-2. **编写良好的提交信息** — 说明为什么，而不只是什么。
-3. **使用分支** — 保持 main/develop 整洁。
-4. **Push 前先 Pull** — 避免冲突。
-5. **提交前检查** — 使用 `git diff --staged`。
-6. **不要提交密钥** — 使用 `.gitignore`。
-7. **为发布打标签** — 使用语义化版本。
-8. **对功能分支执行 Rebase** — 保持历史整洁。
-9. **签名提交** — 使用 GPG 签名验证。
-10. **使用 `.gitattributes`** — 统一换行符。
+1. **经常提交**：小而逻辑完整的提交。
+2. **编写清晰提交信息**：解释为什么，而不只是什么。
+3. **使用分支**：保持 main/develop 整洁。
+4. **Push 前 Pull**：避免冲突。
+5. **提交前审查**：使用 git diff --staged。
+6. **不要提交密钥**：使用 .gitignore。
+7. **发布打 Tag**：采用语义化版本管理。
+8. **Rebase 功能分支**：保持历史清晰。
+9. **签名提交**：使用 GPG 签名进行验证。
+10. **使用 .gitattributes**：统一换行符。
 
 ---
 
@@ -632,4 +629,4 @@ build/
 - [Kubernetes 速查表](./kubernetes-cheat-sheet.md)
 - [Linux 命令速查表](./linux-cheat-sheet.md)
 
-> 译注：reset --hard、clean 和强制推送具有破坏性；不要在未经协调的共享分支上改写历史。已跟踪的密钥不会仅因加入 .gitignore 而移除，泄露后应轮换。
+> 译注：原始命令及英文注释保留。reset --hard、clean、强制推送等可能丢失本地或共享历史，执行前确认并备份。不要随意 Rebase 已共享的分支；.gitignore 不会自动移除已提交的密钥，泄露后应撤销并轮换密钥。
