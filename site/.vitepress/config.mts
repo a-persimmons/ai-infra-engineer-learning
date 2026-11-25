@@ -12,6 +12,17 @@ function locale(en:boolean){
 export default defineConfig({
  base,cleanUrls:false,locales:{root:locale(false),en:locale(true)},
  markdown:{html:false,config(md){
+  // Markdown includes Jinja, shell templates and other literal mustaches.
+  // Encode braces in code output before Vue parses the generated SFC.
+  for(const rule of ['fence','code_block','code_inline']){
+   const original=md.renderer.rules[rule]
+   if(original)md.renderer.rules[rule]=(...args:any[])=>original(...args).replace(/\{/g,'&#123;').replace(/\}/g,'&#125;')
+  }
+  const originalRender=md.render.bind(md)
+  md.render=(src,env)=>originalRender(src,env).replace(/<[^>]+>/g,tag=>{
+   let seen=false
+   return tag.replace(/\s+v-pre(?=\s|\/?>)/g,match=>{if(seen)return '';seen=true;return match})
+  })
   const render=md.renderer.rules.text
   md.renderer.rules.text=(tokens,idx,options,env,self)=>(render?render(tokens,idx,options,env,self):md.utils.escapeHtml(tokens[idx].content)).replace(/\{/g,'&#123;').replace(/\}/g,'&#125;')
  }},

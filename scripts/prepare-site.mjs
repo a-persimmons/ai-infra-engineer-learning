@@ -16,6 +16,10 @@ function destination(source,href,en,img){
  return (decoded.endsWith('/')||!path.posix.extname(target)?repo+'/tree/main/':codeRepo)+encode(target)+hash
 }
 function transform(text,source,en){
+ // This original lesson embeds a Markdown template containing triple fences.
+ if(source==='lessons/mod-101-foundations/exercises/exercise-06-fastapi-ml-template-generator/README.md'){
+  text=text.replace(/^\x60{3}markdown\n(# templates\/README\.md\.j2[\s\S]*?\nMIT\n)\x60{3}$/m,(_,body)=>'\x60\x60\x60\x60markdown\n'+body+'\x60\x60\x60\x60')
+ }
  let fence=null
  return text.split(/\r?\n/).map(line=>{
   const mark=line.match(/^\s*((?:\x60{3,})|(?:~{3,}))/)
