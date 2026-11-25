@@ -5,7 +5,7 @@ function locale(en:boolean){
  return {label:en?'English':'简体中文',lang:en?'en-US':'zh-CN',title:en?'AI Infrastructure Engineering':'AI 基础设施工程师',description:en?'Hands-on AI infrastructure curriculum':'AI 基础设施工程学习路线',themeConfig:{
   nav:[{text:en?'Home':'首页',link:p},{text:en?'Curriculum':'课程大纲',link:p+'guide/curriculum'},{text:en?'Start':'快速开始',link:p+'guide/getting_started'},{text:en?'Projects':'综合项目',items:[{text:en?'Model serving':'模型服务',link:p+'projects/project-101-basic-model-serving/'},{text:en?'MLOps pipeline':'MLOps 管道',link:p+'projects/project-102-mlops-pipeline/'},{text:en?'LLM deployment':'LLM 部署',link:p+'projects/project-103-llm-deployment/'}]}],
   sidebar:sidebar(en),outline:{level:[2,3] as [number,number],label:en?'On this page':'本页目录'},docFooter:{prev:en?'Previous':'上一篇',next:en?'Next':'下一篇'},sidebarMenuLabel:en?'Course contents':'课程目录',returnToTopLabel:en?'Back to top':'返回顶部',langMenuLabel:en?'Change language':'切换语言',darkModeSwitchLabel:en?'Appearance':'外观',skipToContentLabel:en?'Skip to content':'跳转到正文',
-  editLink:{pattern:(page:any)=>repo+'/blob/main/'+(page.frontmatter.sourcePath??'SITE.md'),text:en?'View source on GitHub':'在 GitHub 查看原文'},
+  editLink:{pattern:(page:any)=>'https://github.com/a-persimmons/ai-infra-engineer-learning/blob/main/'+(page.frontmatter.sourcePath??'SITE.md'),text:en?'View source on GitHub':'在 GitHub 查看原文'},
   footer:{message:en?'Open-source educational material · MIT License':'开源学习资料 · MIT 许可',copyright:'AI Infrastructure Engineer Learning'}
  }}
 }
