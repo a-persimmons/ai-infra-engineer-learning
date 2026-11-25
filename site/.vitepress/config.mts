@@ -10,6 +10,8 @@ function locale(en:boolean){
  }}
 }
 export default defineConfig({
+ // Local lab endpoints are intentionally unavailable during static builds.
+ ignoreDeadLinks: [/^https?:\/\/localhost(?::\d+)?(?:[/?#]|$)/],
  base,cleanUrls:false,locales:{root:locale(false),en:locale(true)},
  markdown:{html:false,config(md){
   // Markdown includes Jinja, shell templates and other literal mustaches.
