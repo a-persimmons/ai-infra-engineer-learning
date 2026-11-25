@@ -1,10 +1,10 @@
-# 面向基础设施的 Python 速查表
+# 基础设施工程 Python 速查表
 
-基础设施工程中常用的 Python 编程模式和库的快速参考。
+基础设施工程常用 Python 模式及库的快速参考。
 
 ---
 
-## 基础设施 Python 基础
+## 面向基础设施的 Python 基础
 
 ### 环境管理
 ```bash
@@ -290,7 +290,7 @@ session.commit()
 
 ---
 
-## 云平台 SDK
+## 云 SDK
 
 ### AWS（boto3）
 ```python
@@ -384,7 +384,7 @@ result = container.exec_run('ls -la')
 print(result.output.decode())
 ```
 
-### Kubernetes 客户端
+### Kubernetes Client
 ```python
 from kubernetes import client, config
 
@@ -493,7 +493,7 @@ async def main():
 asyncio.run(main())
 ```
 
-### 使用 aiohttp 异步发送 HTTP 请求
+### 使用 aiohttp 进行异步 HTTP 请求
 ```python
 import aiohttp
 import asyncio
@@ -564,7 +564,7 @@ def test_with_mock():
 
 ## 监控与指标
 
-### Prometheus 客户端
+### Prometheus Client
 ```python
 from prometheus_client import Counter, Histogram, Gauge, start_http_server
 import time
@@ -586,7 +586,7 @@ with request_duration.time():
 start_http_server(8000)
 ```
 
-### 带上下文的日志
+### 上下文日志
 ```python
 import logging
 from contextlib import contextmanager
@@ -638,7 +638,7 @@ class DeploymentError(InfrastructureError):
     pass
 ```
 
-### 类型注解
+### 类型提示
 ```python
 from typing import List, Dict, Optional, Union
 
@@ -729,4 +729,4 @@ config = AppConfig(host='0.0.0.0', workers=8)
 - [Git 速查表](./git-cheat-sheet.md)
 - [Linux 命令速查表](./linux-cheat-sheet.md)
 
-> 译注：示例 API 可能随依赖版本变化。不要将实际数据库密码和云平台凭据写入源代码。
+> 译注：原始代码及英文注释保留，未运行验证。实际应用中应固定依赖版本、设置超时与并发上限、使用参数化 SQL 及短期凭据；重试需考虑幂等性。

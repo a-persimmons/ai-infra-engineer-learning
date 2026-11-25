@@ -1,6 +1,6 @@
 # Kubernetes 速查表
 
-常用 kubectl 命令和 Kubernetes 模式的快速参考。
+常用 kubectl 命令及 Kubernetes 模式的快速参考。
 
 ---
 
@@ -242,7 +242,7 @@ kubectl apply -f <file>.yaml --dry-run=client -o yaml
 kubectl apply -f <file>.yaml --dry-run=server
 ```
 
-### 标签与选择器
+### Label 与 Selector
 ```bash
 # Show labels
 kubectl get pods --show-labels
@@ -263,7 +263,7 @@ kubectl get pods -l env=prod,tier=frontend
 kubectl get pods -l 'env in (prod,staging)'
 ```
 
-### 注解
+### Annotation
 ```bash
 # Add annotation
 kubectl annotate pod <pod-name> description="My pod"
@@ -315,7 +315,7 @@ kubectl logs <pod-name> --all-containers=true
 kubectl logs <pod-name> --timestamps
 ```
 
-### 资源使用量
+### 资源用量
 ```bash
 # Node resource usage
 kubectl top nodes
@@ -403,7 +403,6 @@ kubectl delete pods -l app=myapp
 ---
 
 ## RBAC 与安全
-
 ```bash
 # List service accounts
 kubectl get serviceaccounts
@@ -523,7 +522,6 @@ spec:
 ---
 
 ## GPU 调度
-
 ```yaml
 # Pod with GPU request
 apiVersion: v1
@@ -550,7 +548,6 @@ kubectl describe node <node-name> | grep nvidia.com/gpu
 ---
 
 ## 实用单行命令
-
 ```bash
 # Get all resources in namespace
 kubectl get all -n <namespace>
@@ -586,7 +583,6 @@ kubectl top pods --sort-by=cpu
 ---
 
 ## Helm 命令
-
 ```bash
 # Add repo
 helm repo add <name> <url>
@@ -626,16 +622,16 @@ helm get values <release-name>
 
 ## 实用技巧
 
-1. **使用别名** — `alias k=kubectl` 可节省大量输入。
-2. **使用 kubectl 补全** — `source <(kubectl completion bash)`。
-3. **设置默认命名空间** — 避免重复输入 `-n <namespace>`。
-4. **使用 -o yaml** — 适合调试和理解资源。
-5. **Dry run** — 先用 `--dry-run=client` 测试。
-6. **标签** — 使用一致的标签便于管理。
-7. **资源限制** — 设置 requests 和 limits。
-8. **健康检查** — 添加存活探针和就绪探针。
-9. **使用 context** — 方便切换集群。
-10. **kubectl explain** — `kubectl explain pod.spec` 获取内联文档。
+1. **使用别名**：alias k=kubectl，减少输入。
+2. **kubectl 自动补全**：`source <(kubectl completion bash)`。
+3. **设置默认命名空间**：避免反复输入 -n 参数。
+4. **使用 -o yaml**：便于调试并理解资源。
+5. **Dry-run**：先使用 --dry-run=client 测试。
+6. **标签**：保持标签一致，便于管理。
+7. **资源限制**：设置 Request 与 Limit。
+8. **健康检查**：添加 Liveness 与 Readiness 探针。
+9. **Context**：方便在集群间切换。
+10. **kubectl explain**：例如 kubectl explain pod.spec，查看内联文档。
 
 ---
 
@@ -644,4 +640,4 @@ helm get values <release-name>
 - [Git 速查表](./git-cheat-sheet.md)
 - [Linux 命令速查表](./linux-cheat-sheet.md)
 
-> 译注：在生产环境执行资源删除前，确认当前 context、namespace 和选择器；客户端 dry run 不等于服务器端准入校验。
+> 译注：原始命令及英文注释保留。客户端 Dry-run 不能完整验证准入控制与服务端配置，可按需使用 --dry-run=server。执行清理或变更前确认当前 Context 与命名空间；Secret Base64 编码不是加密。
