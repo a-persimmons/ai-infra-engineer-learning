@@ -1,23 +1,23 @@
-# 部署指南 — 项目 01：基础模型服务
+# 部署指南——项目 01：基础模型服务
 
 ## 前置条件
 
-- 已安装 Docker
-- Kubernetes 集群（minikube、kind 或云集群）
-- 已配置 kubectl
-- Python 3.11+
+- 已安装 Docker。
+- Kubernetes 集群（minikube、kind 或云集群）。
+- 已配置 kubectl。
+- Python 3.11+。
 
-## 部署选项
+## 部署方式
 
-1. [本地开发（Docker Compose）](#选项-1本地开发docker-compose)
-2. [Kubernetes（Minikube）](#选项-2kubernetes本地--minikube)
-3. [云端 Kubernetes（GKE/EKS/AKS）](#选项-3云端-kubernetes生产环境)
+1. [本地开发（Docker Compose）](#方式-1-本地开发-docker-compose)
+2. [Kubernetes（Minikube）](#方式-2-kubernetes-本地-minikube)
+3. [云 Kubernetes（GKE/EKS/AKS）](#方式-3-云-kubernetes-生产环境)
 
 ---
 
-## 选项 1：本地开发（Docker Compose）
+## 方式 1：本地开发（Docker Compose）
 
-### 步骤 1：克隆及配置
+### 步骤 1：克隆并设置
 
 ```bash
 cd projects/project-101-basic-model-serving
@@ -31,7 +31,7 @@ mkdir -p models
 # TODO: Add model download script
 ```
 
-### 步骤 2：构建并运行
+### 步骤 2：构建与运行
 
 ```bash
 # Build and start all services
@@ -66,7 +66,7 @@ docker-compose down
 
 ---
 
-## 选项 2：Kubernetes（本地 — Minikube）
+## 方式 2：Kubernetes（本地 Minikube）
 
 ### 步骤 1：启动 Minikube
 
@@ -172,7 +172,7 @@ minikube stop
 
 ---
 
-## 选项 3：云端 Kubernetes（生产环境）
+## 方式 3：云 Kubernetes（生产环境）
 
 ### 步骤 3a：Google Kubernetes Engine（GKE）
 
@@ -311,7 +311,7 @@ az group delete --name ml-rg --yes --no-wait
 
 ## 故障排查
 
-### Pod 无法启动
+### Pod 未启动
 
 ```bash
 # Check pod status
@@ -324,7 +324,7 @@ kubectl describe pod <pod-name> -n ml-serving
 # 3. Insufficient resources: Check node resources
 ```
 
-### 无法访问 Service
+### 无法访问服务
 
 ```bash
 # Check service
@@ -338,7 +338,7 @@ kubectl get endpoints -n ml-serving
 # Or use NodePort/port-forward for testing
 ```
 
-### 内存使用量过高
+### 内存使用量高
 
 ```bash
 # Check resource usage
@@ -405,12 +405,12 @@ kubectl port-forward -n monitoring svc/prometheus-grafana 3000:80
 ### GitHub Actions（参见 .github/workflows/ci-cd.yaml）
 
 自动执行：
-1. 在 PR 时运行测试。
+1. PR 时运行测试。
 2. 合并到 main 时构建 Docker 镜像。
 3. 推送至容器镜像仓库。
-4. 部署至预发布或生产环境。
+4. 部署至预发布/生产环境。
 
-**配置：**
+**设置：**
 ```bash
 # Add secrets to GitHub repo
 # - DOCKER_USERNAME
@@ -420,32 +420,32 @@ kubectl port-forward -n monitoring svc/prometheus-grafana 3000:80
 
 ---
 
-## 生产环境检查清单
+## 生产检查清单
 
-部署至生产环境之前：
+部署至生产前：
 
-- [ ] 配置资源限制（CPU、内存）
-- [ ] 配置健康检查（存活、就绪）
-- [ ] 配置监控及告警
-- [ ] 配置日志聚合
-- [ ] 测试自动扩缩容规则
-- [ ] 记录灾难恢复计划
-- [ ] 安全加固（非 root 用户、网络策略）
-- [ ] 启用成本监控
-- [ ] 更新文档
-- [ ] 完成负载测试
-- [ ] 测试回滚流程
+- [ ] 配置资源限制（CPU、内存）。
+- [ ] 配置健康检查（Liveness、Readiness）。
+- [ ] 设置监控与告警。
+- [ ] 配置日志聚合。
+- [ ] 测试自动扩缩容规则。
+- [ ] 记录灾难恢复方案。
+- [ ] 安全加固（非 root 用户、网络策略）。
+- [ ] 启用成本监控。
+- [ ] 更新文档。
+- [ ] 完成负载测试。
+- [ ] 测试回滚流程。
 
 ---
 
 ## 下一步
 
-1. 本地部署并测试。
+1. 本地部署与测试。
 2. 部署至 Kubernetes 并验证。
-3. 配置监控及告警。
+3. 搭建监控与告警。
 4. 运行负载测试。
-5. 记录问题及优化措施。
+5. 记录问题与优化。
 
-如有问题，参见 [TROUBLESHOOTING.md](./TROUBLESHOOTING.md)。
+如有疑问，参见[故障排查指南](./TROUBLESHOOTING.md)。
 
-> 译注：云端资源创建及清理命令可能产生费用或删除数据；执行前确认账号、区域和集群。原文命令未经本次部署实测。
+> 译注：云部署可能产生费用，执行创建或删除命令前确认账号、集群、命名空间与资源归属。原始代码保留，未实际部署。

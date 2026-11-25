@@ -1,10 +1,10 @@
-# 故障排查指南 — ML 模型服务
+# 故障排查指南——ML 模型服务
 
-## 常见问题与解决方案
+## 常见问题及解决方案
 
 ### 1. Docker 构建问题
 
-#### 问题：Docker 构建失败，提示 no space left on device
+#### 问题：“Docker build 失败，提示 no space left on device”
 
 **症状：**
 ```
@@ -21,9 +21,9 @@ docker builder prune
 df -h
 ```
 
-#### 问题：镜像构建非常缓慢
+#### 问题：“镜像构建很慢”
 
-**症状：** 构建耗时超过 10 分钟。
+**症状：** 构建超过 10 分钟。
 
 **解决方案：**
 1. 按变更频率排列 Dockerfile 层。
@@ -39,7 +39,7 @@ df -h
 
 ### 2. 容器运行时问题
 
-#### 问题：容器立即退出
+#### 问题：“容器立即退出”
 
 **症状：**
 ```bash
@@ -60,11 +60,11 @@ docker run ml-api:v1 ls -la /app/models/
 ```
 
 **常见原因：**
-- 找不到模型文件
-- 权限问题
-- 缺少依赖
+- 找不到模型文件。
+- 权限问题。
+- 缺少依赖。
 
-#### 问题：模型无法加载
+#### 问题：“模型无法加载”
 
 **症状：**
 ```
@@ -88,7 +88,7 @@ docker run -v $(pwd)/models:/app/models ml-api:v1 ls /app/models/
 
 ### 3. Kubernetes 部署问题
 
-#### 问题：Pod 卡在 Pending 状态
+#### 问题：“Pod 卡在 Pending 状态”
 
 **症状：**
 ```bash
@@ -118,7 +118,7 @@ kubectl get events -n ml-serving --sort-by='.lastTimestamp'
 # Reduce resource requests in deployment.yaml if needed
 ```
 
-#### 问题：ImagePullBackOff 错误
+#### 问题：“ImagePullBackOff”
 
 **症状：**
 ```
@@ -142,7 +142,7 @@ docker push gcr.io/project/ml-api:v1
 image: gcr.io/project/ml-api:v1
 ```
 
-#### 问题：CrashLoopBackOff
+#### 问题：“CrashLoopBackOff”
 
 **症状：**
 ```
@@ -182,7 +182,7 @@ livenessProbe:
 
 ### 4. API 问题
 
-#### 问题：API 返回 503 Service Unavailable
+#### 问题：“API 返回 503 Service Unavailable”
 
 **症状：**
 ```bash
@@ -191,9 +191,9 @@ curl http://localhost:8000/health
 ```
 
 **原因：**
-- 模型未加载
-- 应用未启动
-- 健康检查失败
+- 模型未加载。
+- 应用未启动。
+- 健康检查失败。
 
 **解决方案：**
 ```bash
@@ -207,11 +207,11 @@ kubectl logs deployment/ml-api -n ml-serving
 # Check resource availability (memory, CPU)
 ```
 
-#### 问题：推理缓慢（超过 1 秒）
+#### 问题：“推理缓慢（超过 1 秒）”
 
 **症状：**
-- 预测耗时数秒
-- 超时
+- 预测耗时数秒。
+- 超时。
 
 **调试：**
 ```python
@@ -223,11 +223,11 @@ print(f"Inference time: {time.time() - start:.3f}s")
 ```
 
 **解决方案：**
-1. **使用 GPU：** 为容器添加 GPU 支持。
+1. **使用 GPU：** 为容器增加 GPU 支持。
 2. **模型优化：** 使用 ONNX、TensorRT 或量化。
-3. **批量推理：** 一起处理多张图像。
-4. **模型缓存：** 确保模型预先加载，而不是每次请求重新加载。
-5. **减小图像尺寸：** 对输入图像降采样。
+3. **批量推理：** 一起处理多个图像。
+4. **模型缓存：** 确保模型预加载，而非每次请求加载。
+5. **减小图像：** 对输入图像降采样。
 
 **CPU 与 GPU 对比：**
 ```
@@ -235,7 +235,7 @@ CPU inference: 100-500ms
 GPU inference: 5-50ms (10-100x faster)
 ```
 
-#### 问题：推理期间内存不足（OOM）
+#### 问题：“推理期间内存不足（OOM）”
 
 **症状：**
 ```
@@ -262,11 +262,11 @@ device = torch.device("cpu")
 
 ### 5. 监控问题
 
-#### 问题：Prometheus 未采集指标
+#### 问题：“Prometheus 未抓取指标”
 
 **症状：**
-- Prometheus 中不显示指标
-- 采集目标显示 Down
+- Prometheus 中没有指标。
+- Target 显示为 Down。
 
 **调试：**
 ```bash
@@ -291,7 +291,7 @@ kubectl run -it --rm debug --image=curlimages/curl --restart=Never -- \
   curl http://ml-api-service.ml-serving.svc.cluster.local:80/metrics
 ```
 
-#### 问题：Grafana 仪表盘无数据
+#### 问题：“Grafana 仪表盘没有数据”
 
 **解决方案：**
 ```bash
@@ -310,7 +310,7 @@ kubectl run -it --rm debug --image=curlimages/curl --restart=Never -- \
 
 ### 6. 性能问题
 
-#### 问题：高延迟（p99 超过 500ms）
+#### 问题：“延迟过高（P99 超过 500ms）”
 
 **性能分析：**
 ```python
@@ -329,31 +329,31 @@ stats.sort_stats('cumtime')
 stats.print_stats(10)  # Top 10 functions
 ```
 
-**常见瓶颈：**
+**常见瓶颈（原文示例）：**
 1. **图像预处理：** 20–50ms。
-   - 解决方案：优化缩放与归一化操作。
-2. **模型推理：** 50–200ms（CPU），5–50ms（GPU）。
-   - 解决方案：使用 GPU、优化模型。
+   - 方案：优化 Resize/Normalize 操作。
+2. **模型推理：** 50–200ms（CPU）、5–50ms（GPU）。
+   - 方案：使用 GPU、优化模型。
 3. **后处理：** 5–10ms。
-   - 解决方案：向量化操作。
+   - 方案：向量化操作。
 
-#### 问题：低吞吐量（低于 10 req/sec）
+#### 问题：“吞吐低（每秒不足 10 个请求）”
 
 **解决方案：**
-1. **水平扩容：** 增加 Pod。
+1. **水平扩展：** 添加 Pod。
 2. **异步处理：** 使用 FastAPI async。
 3. **请求批处理：** 一起处理多个请求。
 4. **连接池：** 复用连接。
-5. **缓存：** 缓存常见预测结果。
+5. **缓存：** 缓存常见预测。
 
 ---
 
 ### 7. 扩缩容问题
 
-#### 问题：HPA 未扩容
+#### 问题：“HPA 未扩容”
 
 **症状：**
-- CPU/内存超过目标值，但未创建新 Pod。
+- CPU/内存超过目标，但未创建新 Pod。
 
 **调试：**
 ```bash
@@ -379,7 +379,7 @@ kubectl edit hpa ml-api-hpa -n ml-serving
 
 ---
 
-## 调试命令速查表
+## 调试命令速查
 
 ### Docker
 
@@ -427,16 +427,15 @@ kubectl get events -n ml-serving --sort-by='.lastTimestamp'
 
 ## 寻求帮助
 
-如果遇到此处未涵盖的问题：
-
+若问题未在此覆盖：
 1. 检查应用日志。
 2. 搜索 GitHub Issues。
-3. 在 Discussions 中提问。
-4. 创建新 Issue，并包含：
-   - 错误信息
-   - 复现步骤
-   - 环境（Docker 版本、K8s 版本等）
-   - 日志
+3. 在 Discussions 提问。
+4. 创建新 Issue，包含：
+   - 错误信息。
+   - 复现步骤。
+   - 环境（Docker、K8s 版本等）。
+   - 日志。
 
 ---
 
@@ -446,4 +445,4 @@ kubectl get events -n ml-serving --sort-by='.lastTimestamp'
 - [Kubernetes 故障排查](https://kubernetes.io/docs/tasks/debug/)
 - [FastAPI 调试](https://fastapi.tiangolo.com/tutorial/debugging/)
 
-> 译注：性能耗时为原文示例，需在具体环境测量；async 主要改善 I/O 并发，不能直接加速 CPU/GPU 密集计算，阻塞推理应使用合适的执行策略。
+> 译注：异步 I/O 不会自动加速 CPU 密集推理；需评估执行器、并发限制、模型线程安全与批处理等待时间。清理 Docker 或 Kubernetes 资源前先检查是否仍被使用。所有原始代码块保留，未实际运行。
