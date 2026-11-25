@@ -1,50 +1,51 @@
 # 第 03 课：镜像优化
 
 **时长：** 5 小时
-**目标：** 优化 Docker 镜像体积、构建速度与运行性能。
+**目标：** 针对体积、构建速度与运行时性能优化 Docker 镜像。
 
 ## 学习目标
 
 完成本课后，你将能够：
 
 1. 使用多阶段构建分离构建依赖与运行时依赖。
-2. 实施镜像层缓存策略，加快重新构建。
-3. 将机器学习镜像从 3GB 以上缩小至 1GB 以下（原文目标）。
+2. 实现镜像层缓存策略，加快重新构建。
+3. 将 ML 镜像从 3GB 以上缩减至 1GB 以下（练习目标）。
 4. 编写有效的 .dockerignore 文件。
-5. 安全使用构建参数及 Secret。
-6. 在 alpine、slim 与完整基础镜像之间进行选择。
-7. 实施安全扫描与漏洞管理。
+5. 安全地使用构建参数与 Secret。
+6. 在 alpine、slim 和完整基础镜像之间作出选择。
+7. 应用安全扫描与漏洞管理。
 
 ## 镜像优化为什么重要
 
-### 问题：臃肿的机器学习镜像
+### 问题：臃肿的 ML 镜像
 
-未经优化的机器学习 Docker 镜像容易达到：
-- 基础 PyTorch/TensorFlow 应用：**3–5GB**。
-- 包含构建工具及多个框架的镜像：**10–15GB**。
-- 含有不必要系统软件包的镜像：**20GB 以上**。
+未经优化的 ML Docker 镜像很容易达到：
+- **3–5GB**：基础 PyTorch/TensorFlow 应用。
+- **10–15GB**：包含构建工具与多个框架的镜像。
+- **20GB 以上**：包含不必要系统软件包的镜像。
 
 **实际影响（原文示例）：**
 
-| 指标 | 未优化（5GB） | 已优化（500MB） |
+| 指标 | 未优化（5GB） | 优化后（500MB） |
 |---|---|---|
-| 拉取时间（100 Mbps） | 约 7 分钟 | 约 40 秒 |
+| 拉取时间（100Mbps） | 约 7 分钟 | 约 40 秒 |
 | 构建时间 | 15–20 分钟 | 2–3 分钟 |
-| 存储成本（每个镜像） | 0.10–0.20 美元/月 | 0.01–0.02 美元/月 |
+| 存储费用（每个镜像） | 0.10–0.20 美元/月 | 0.01–0.02 美元/月 |
 | 部署速度 | 慢 | 快 |
-| 攻击面 | 大（软件包较多） | 小（软件包较少） |
+| 安全攻击面 | 大（软件包较多） | 小（最少的软件包） |
 
 **对于每天部署 50 次的团队：**
 - 未优化：约 6 小时等待时间。
-- 已优化：约 30 分钟等待时间。
+- 优化后：约 30 分钟等待时间。
 - **每天节省约 5.5 小时！**
 
 ## 多阶段构建
 
 ### 概念
 
-多阶段构建在一个 Dockerfile 中使用多个 FROM 指令：
-1. **构建阶段：** 安装编译器与构建工具，编译代码。
+多阶段构建在一个 Dockerfile 中使用多个 FROM 语句：
+
+1. **构建阶段：** 安装编译器、构建工具并编译代码。
 2. **运行阶段：** 仅复制编译产物与最少的运行时依赖。
 
 **优化前（单阶段）：**
@@ -122,11 +123,11 @@ CMD ["python", "main.py"]
 **体积比较：**
 - 单阶段：约 2.8GB。
 - 多阶段：约 1.1GB。
-- **节省：60%。**
+- **节省 60%。**
 
-### 高级多阶段构建：从源码编译
+### 进阶多阶段构建：从源码编译
 
-对于需要编译的软件包：
+针对需要编译的软件包：
 
 ```dockerfile
 # ========================================
@@ -235,16 +236,17 @@ CMD ["python3.11", "main.py"]
 **体积比较：**
 - devel 基础镜像：8.2GB。
 - runtime 基础镜像：4.1GB。
-- **节省：50%。**
+- **节省 50%。**
 
 ## 镜像层缓存策略
 
 ### 理解 Docker 镜像层缓存
 
-Docker 缓存构建步骤。以下情况会导致相应缓存失效：
+Docker 缓存每一层。在以下情况下，某层缓存可能失效：
+
 1. 指令发生变化。
 2. 指令复制的文件发生变化。
-3. 前面的构建步骤缓存失效。
+3. 前面的镜像层失效。
 
 **示例：**
 ```dockerfile
@@ -254,16 +256,16 @@ RUN pip install -r requirements.txt    # Layer 3 (cached if Layer 2 cached)
 COPY . /app                            # Layer 4 (invalidated if ANY file changes)
 ```
 
-### 优化原则：按变更频率排序
+### 优化规则：按照变化频率排列
 
-**不推荐（缓存频繁失效）：**
+**错误做法（频繁使缓存失效）：**
 ```dockerfile
 FROM python:3.11-slim
 COPY . /app                           # Changes often
 RUN pip install -r requirements.txt   # Reinstalls every time!
 ```
 
-**推荐（高效利用缓存）：**
+**正确做法（高效缓存）：**
 ```dockerfile
 FROM python:3.11-slim
 COPY requirements.txt .               # Changes rarely
@@ -271,7 +273,7 @@ RUN pip install -r requirements.txt   # Cached!
 COPY . /app                           # Changes often (but doesn't affect pip)
 ```
 
-### 按变更频率分离依赖
+### 按变化频率拆分依赖
 
 ```dockerfile
 FROM python:3.11-slim
@@ -337,17 +339,17 @@ docker build -t my-image .
 
 ### 技术 1：使用 Slim/Alpine 基础镜像
 
-**基础镜像比较（原文示例）：**
+**基础镜像比较：**
 
 | 镜像 | 大小 | 优点 | 缺点 |
 |---|---|---|---|
-| python:3.11 | 1GB | 包含完整工具 | 体积大 |
-| python:3.11-slim | 130MB | 平衡性好 | 缺少部分工具 |
-| python:3.11-alpine | 50MB | 非常小 | 编译问题、构建较慢 |
+| python:3.11 | 1GB | 包含完整工具 | 体积较大 |
+| python:3.11-slim | 130MB | 平衡较好 | 缺少部分工具 |
+| python:3.11-alpine | 50MB | 非常小 | 编译兼容问题、构建较慢 |
 
-**对于机器学习工作负载：**
-- **推荐 slim：** 对机器学习软件包具有较好的平衡性。
-- **谨慎使用 alpine：** 许多机器学习库可能无法编译，或运行速度较慢。
+**针对 ML 工作负载：**
+- **使用 slim：** 对 ML 软件包而言通常是较好的折中。
+- **谨慎使用 alpine：** 许多 ML 库可能难以编译，或存在性能问题。
 
 ```dockerfile
 # Good for ML
@@ -357,7 +359,7 @@ FROM python:3.11-slim
 FROM python:3.11-alpine
 ```
 
-### 技术 2：使用后移除构建依赖
+### 技术 2：使用完毕后移除构建依赖
 
 ```dockerfile
 FROM python:3.11-slim
@@ -371,11 +373,11 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 ```
 
-**为什么放在同一个 RUN 指令中？**
-- 每个 RUN 通常产生一个文件系统层。
-- 镜像层逐层叠加（在后续层删除文件，不会缩小之前层的体积）。
+**为什么在同一个 RUN 指令中完成？**
+- 每个 RUN 创建一个镜像层。
+- 镜像层逐层叠加（在后续层删除文件不会缩小前面的层）。
 
-**不推荐（无法缩小已有层）：**
+**错误做法（不会缩小体积）：**
 ```dockerfile
 RUN apt-get install gcc g++     # Layer 1: +200MB
 RUN pip install package          # Layer 2: +50MB
@@ -383,7 +385,7 @@ RUN apt-get remove gcc g++       # Layer 3: +0MB (but Layer 1 still exists!)
 # Total: 250MB
 ```
 
-**推荐（实际减少体积）：**
+**正确做法（实际缩小体积）：**
 ```dockerfile
 RUN apt-get install gcc g++ && \
     pip install package && \
@@ -412,7 +414,7 @@ RUN conda install numpy && \
 
 ### 技术 4：使用 .dockerignore
 
-创建 .dockerignore，从构建上下文中排除不必要文件：
+创建 .dockerignore，从构建上下文中排除文件：
 
 ```
 # .dockerignore
@@ -472,25 +474,25 @@ Thumbs.db
 ```
 
 **影响：**
-- 构建更快（减少发送至 Docker 守护进程的数据）。
+- 构建更快（发送给 Docker 构建器的数据更少）。
 - 镜像更小（避免意外复制大型文件）。
-- 安全性更好（避免复制 .env、凭据等文件）。
+- 安全性更好（避免复制 .env 和凭据）。
 
-### 技术 5：仅安装必要的依赖
+### 技术 5：只安装需要的内容
 
-**不推荐（安装全部依赖）：**
+**错误做法（安装所有内容）：**
 ```dockerfile
 RUN pip install transformers
 # Includes: PyTorch, TensorFlow, Flax, JAX, and all dependencies
 ```
 
-**推荐（最小依赖）：**
+**正确做法（最少依赖）：**
 ```dockerfile
 RUN pip install transformers torch
 # Explicit about what you need
 ```
 
-**检查包含哪些内容：**
+**检查镜像包含的内容：**
 ```bash
 # See all installed packages
 docker run my-image pip list
@@ -506,7 +508,7 @@ dive my-image
 
 ### 技术 6：Distroless 镜像
 
-Google 的 distroless 镜像只包含应用及其运行时依赖：
+Google 的 distroless 镜像只包含应用与运行时所需依赖：
 
 ```dockerfile
 # Build stage
@@ -529,14 +531,14 @@ WORKDIR /app
 CMD ["main.py"]
 ```
 
-**收益：**
-- 较小的攻击面（没有 Shell、没有包管理器）。
+**优点：**
+- 攻击面较小（无 Shell，无软件包管理器）。
 - 体积更小。
-- 有助于提高安全性。
+- 安全性更好。
 
 **缺点：**
-- 更难调试（没有 Shell）。
-- 仅支持特定语言和运行时组合。
+- 调试较困难（没有 Shell）。
+- 支持特定语言与运行时。
 
 ### 技术 7：压缩与合并镜像层（Squashing）
 
@@ -551,7 +553,7 @@ docker build --squash -t my-image .
 docker save my-image | docker load
 ```
 
-**注意：** 合并镜像层可能失去镜像层复用与缓存方面的收益。
+**注意：** 合并层可能失去镜像层缓存带来的收益。
 
 ### 技术 8：使用 dive 进行静态分析
 
@@ -564,11 +566,11 @@ sudo apt install ./dive_0.11.0_linux_amd64.deb
 dive my-ml-image:latest
 ```
 
-**dive 展示的内容：**
+**dive 显示：**
 - 每层大小。
-- 浪费的空间。
+- 浪费空间。
 - 效率评分。
-- 层之间的文件变更。
+- 层之间的文件变化。
 
 ## 构建参数与 Secret
 
@@ -626,7 +628,7 @@ docker build --secret id=pip_token,src=./pip_token.txt -t my-image .
 
 ## 完整优化示例
 
-### 优化前：未经优化的 Dockerfile（5.2GB）
+### 优化前：未优化的 Dockerfile（5.2GB）
 
 ```dockerfile
 FROM python:3.11
@@ -707,25 +709,25 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 ```
 
-**已应用的优化：**
+**采用的优化措施：**
 1. 多阶段构建（Builder + Runtime）。
 2. Slim 基础镜像。
 3. 最少依赖。
 4. BuildKit 缓存挂载。
-5. 移除软件包缓存。
+5. 清理软件包缓存。
 6. 非 Root 用户。
 7. 健康检查。
 8. .dockerignore（外部文件）。
 9. 合理的镜像层顺序。
 
 **结果（原文示例）：**
-- 体积：5.2GB → 680MB（减少 87%）。
+- 大小：5.2GB → 680MB（减少 87%）。
 - 构建时间：12 分钟 → 2 分钟（使用缓存）。
-- 安全性：得到改善（非 Root、最少软件包）。
+- 安全性：更好（非 Root、最少软件包）。
 
 ## 测量与比较
 
-### 检查镜像体积
+### 检查镜像大小
 
 ```bash
 # List image sizes
@@ -754,7 +756,7 @@ docker history my-image:unoptimized
 docker history my-image:optimized
 ```
 
-## 动手练习：优化臃肿的镜像
+## 动手练习：优化臃肿镜像
 
 ### 场景
 
@@ -792,8 +794,8 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0"]
 
 ### 你的任务
 
-优化此 Dockerfile，实现：
-- [ ] 体积缩小至 1.5GB 以下。
+优化此 Dockerfile，达到以下要求：
+- [ ] 将大小缩减至 1.5GB 以下。
 - [ ] 使用多阶段构建。
 - [ ] 应用镜像层缓存最佳实践。
 - [ ] 添加非 Root 用户。
@@ -802,7 +804,7 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0"]
 
 **目标：体积减少 70% 以上。**
 
-### 解答模板
+### 解决方案模板
 
 ```dockerfile
 # TODO: Implement multi-stage build
@@ -819,20 +821,21 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0"]
 
 ## 常见优化错误
 
-### 错误 1：优化了错误的目标
+### 错误 1：优化目标不正确
 
-不推荐：专注删除 5MB 的文档。
-推荐：优先删除 500MB 的构建工具。
+**错误重点：** 删除 5MB 文档。
 
-**优先级：**
+**正确重点：** 删除 500MB 构建工具。
+
+**优先顺序：**
 1. 大型依赖（编译器、开发软件包）。
 2. 未使用的系统软件包。
 3. 软件包缓存。
-4. 最后考虑小幅优化。
+4. 最后考虑小规模优化。
 
-### 错误 2：为了体积破坏功能
+### 错误 2：为了体积而破坏功能
 
-不要删除应用所需的软件包！
+不要移除应用需要的软件包！
 
 ```bash
 # Test thoroughly after optimization
@@ -842,27 +845,28 @@ docker run my-image curl http://localhost:8000/health
 
 ### 错误 3：为了体积牺牲安全性
 
-不推荐：为了节省一个镜像层而以 Root 用户运行。
-推荐：即使增加 50MB，也应添加非 Root 用户。
+**错误做法：** 为节省一个镜像层而使用 Root 运行。
+
+**正确做法：** 即使增加 50MB，也应添加非 Root 用户（原文举例）。
 
 ## 总结
 
 本课学习了：
 
 1. **多阶段构建**——分离构建与运行时依赖。
-2. **镜像层缓存**——按变更频率排列指令。
-3. **缩小体积**——使用 Slim 镜像，清理缓存，移除构建依赖。
-4. **.dockerignore**——排除不必要的文件。
+2. **镜像层缓存**——按变化频率排列指令。
+3. **缩小体积**——使用 Slim 镜像、清理缓存、移除构建依赖。
+4. **.dockerignore**——排除不必要文件。
 5. **构建参数**——参数化构建。
-6. **Secret**——绝不要把密钥固化至镜像。
+6. **Secret**——不要将 Secret 写入镜像。
 7. **测量**——使用 docker history 与 dive。
 
-**关键原则：**
-- 从能够满足需求的最小基础镜像开始。
-- 使用多阶段构建分离关注点。
-- 按从最少变更到最频繁变更的顺序排列构建步骤。
-- 在安装软件包的同一层完成清理。
-- 充分使用 .dockerignore。
+**核心原则：**
+- 从满足需求的最小基础镜像开始。
+- 通过多阶段构建实现关注点分离。
+- 按照从最不常变化到最常变化的顺序排列层。
+- 在安装的同一层进行清理。
+- 充分利用 .dockerignore。
 - 测量并迭代。
 
 **典型结果（原文示例）：**
@@ -870,13 +874,13 @@ docker run my-image curl http://localhost:8000/health
 - **构建时间：** 10–15 分钟 → 2–3 分钟（使用缓存）。
 - **拉取时间：** 5–7 分钟 → 30–40 秒。
 
-## 下一步是什么？
+## 下一步
 
 下一课 **04-docker-networking-volumes.md** 将学习：
 - Docker 网络模式。
-- 容器之间的通信。
-- 机器学习服务的端口映射。
-- 用于持久化数据及模型的数据卷。
+- 容器间通信。
+- ML 服务的端口映射。
+- 用于持久化数据与模型的数据卷。
 - 用于开发的绑定挂载。
 
 ---
@@ -884,20 +888,20 @@ docker run my-image curl http://localhost:8000/health
 ## 自我检查问题
 
 1. 什么是多阶段构建？何时使用？
-2. 为什么应在应用代码之前复制 requirements.txt？
+2. 为什么应该在复制应用代码之前复制 requirements.txt？
 3. python:3.11 与 python:3.11-slim 有什么区别？
-4. 如何清理 apt 缓存以减少镜像体积？
-5. 以下写法存在什么问题：`RUN apt install gcc && ... && RUN apt remove gcc`？
+4. 如何清理 apt 缓存以缩小镜像？
+5. 以下指令有什么问题：`RUN apt install gcc && ... && RUN apt remove gcc`？
 
 ## 补充资源
 
 - [多阶段构建文档](https://docs.docker.com/build/building/multi-stage/)
 - [BuildKit 文档](https://docs.docker.com/build/buildkit/)
-- [dive 镜像分析工具](https://github.com/wagoodman/dive)
+- [dive——镜像分析工具](https://github.com/wagoodman/dive)
 - [Distroless 镜像](https://github.com/GoogleContainerTools/distroless)
 
 ---
 
 **下一课：** [04-docker-networking-volumes.md](./04-docker-networking-volumes.md)
 
-> 译注：原文体积、成本和性能数字为示例，未进行实测；应区分压缩传输大小与解压后的镜像体积。Alpine 使用 musl，部分机器学习依赖缺乏兼容 Wheel。非 Root 用户一般不需要增加 50MB。BuildKit Secret 仍可能被不安全的构建命令写入日志或产物。所有代码块及内部英文说明保持原样；安全扫描的效果、工具参数与镜像版本仍需实际验证。
+> 译注：体积、时间与费用数字为原文示例，并非实测保证。镜像压缩后传输大小可能不同于本地解压大小。多阶段构建需要确保运行时仍包含必要的动态库及兼容 ABI；BuildKit Secret 不应被复制到镜像或输出到日志。镜像精简不能替代漏洞扫描与运行时安全策略。保留全部原始代码块和其中英文注释。
