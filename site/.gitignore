@@ -1,0 +1,5 @@
+*
+!/.gitignore
+!/.vitepress/
+/.vitepress/*
+!/.vitepress/config.mts
