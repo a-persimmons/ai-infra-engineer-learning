@@ -1,0 +1,70 @@
+name: Translate all remaining course documents
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: 'OpenAI model ID available to your API project'
+        required: true
+        default: 'gpt-6-luna'
+      workers:
+        description: 'Parallel API requests (1–8)'
+        required: true
+        default: '4'
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: course-translation
+  cancel-in-progress: false
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Validate input and translate all missing documents
+        run: |
+          node scripts/translate-missing.mjs --dry-run
+          node scripts/translate-missing.mjs
+          node scripts/translate-missing.mjs --verify
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          TRANSLATION_MODEL: ${{ inputs.model }}
+          TRANSLATION_WORKERS: ${{ inputs.workers }}
+      - name: Build bilingual site before publishing
+        run: npm run docs:build
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+      - name: Commit translations together
+        id: publish
+        run: |
+          git add translations/zh/
+          if git diff --cached --quiet; then
+            echo "No changes to publish."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Translate remaining course documents into Simplified Chinese"
+          git push origin HEAD:main
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+      - name: Trigger Pages deployment
+        if: steps.publish.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref main
+      - name: Save translation checkpoint if a run fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: translation-checkpoint
+          path: translations/zh/
+          retention-days: 7

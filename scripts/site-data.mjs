@@ -51,7 +51,7 @@ function walk(dir=''){
  return fs.readdirSync(path.join(root,dir),{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name,'en')).flatMap(e=>{
   if(e.name.startsWith('.')||['site','scripts','node_modules','translations'].includes(e.name))return []
   const p=path.posix.join(dir,e.name)
-  return e.isDirectory()?walk(p):e.isFile()&&p.endsWith('.md')&&p!=='SITE.md'?[p]:[]
+  return e.isDirectory()?walk(p):e.isFile()&&p.endsWith('.md')&&!['SITE.md','TRANSLATION.md'].includes(p)?[p]:[]
  })
 }
 const human=s=>s.replace(/\.md$/i,'').replace(/[-_]/g,' ').replace(/\b[a-z]/g,x=>x.toUpperCase())

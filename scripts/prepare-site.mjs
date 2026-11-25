@@ -43,10 +43,10 @@ for(const p of pages){
  const source=await fs.readFile(path.join(root,p.source),'utf8')
  let translated=null;try{translated=await fs.readFile(path.join(root,'translations/zh',p.source),'utf8')}catch(e){if(e.code!=='ENOENT')throw e}
  const sourceLink=codeRepo+encode(p.source)
- const front=en=>fm({title:en?p.en:p.zh,sourcePath:p.source,translationStatus:en?'original':translated?'translated':'guide'})
+ const front=en=>fm({title:en?p.en:p.zh,sourcePath:p.source,translationStatus:en?'original':translated?.includes('<!-- translation: machine-generated; review pending -->')?'machine-translated':translated?'translated':'guide'})
  await write('en/'+p.route,front(true)+'[中文导读]('+url(p,false)+') · [Source on GitHub]('+sourceLink+')\n\n'+transform(source,p.source,true))
  let body
- if(translated!==null){body='[English original]('+url(p,true)+') · [GitHub]('+sourceLink+')\n\n'+transform(translated,p.source,false)}
+ if(translated!==null){body=(translated.includes('<!-- translation: machine-generated; review pending -->')?'> **机器翻译 · 待人工校对。** 技术细节请与英文原文核对。\n\n':'')+'[English original]('+url(p,true)+') · [GitHub]('+sourceLink+')\n\n'+transform(translated,p.source,false)}
  else{
   body='# '+p.zh+'\n\n> **翻译状态：中文导读 / 英文原文。** 本页不是完整译文；英文原文包含完整技术细节、代码和练习。\n\n[阅读英文全文]('+url(p,true)+') · [查看仓库原文]('+sourceLink+')\n\n'
   if(p.note)body+='## 学习目标\n\n'+p.note+'\n\n'
