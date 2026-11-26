@@ -149,7 +149,7 @@
 - **本周期决定：** [`mod-107`](./lessons/mod-107-gpu-computing/) 与 lab-03 的现有覆盖对工程师级别已足够；归属仍为 [`ai-infra-senior-engineer-learning`](../ai-infra-senior-engineer-learning/)。继续监测。如果 2026-12 周期的中级样本更多偏向推理/HPC（n≥25），仍可能触发该条件。
 - **学习资源：** [NVIDIA NCCL docs](https://docs.nvidia.com/deeplearning/nccl/user-guide/)、[NVIDIA DOCA / NIXL docs](https://docs.nvidia.com/doca/)、用于拓扑感知放置的 [MLPerf Training methodology](https://mlcommons.org/benchmarks/training/)、用于了解 RoCE 演进的 [Ultra Ethernet Consortium](https://ultraethernet.org/)。
 
-### NVIDIA Dynamo / 解耦式推理 — 仍在兴起
+### NVIDIA Dynamo / 解耦式推理 — 仍在兴起 {#nvidia-dynamo--disaggregated-inference-still-emerging}
 
 - **样本频率：** 0.03——仅 Hippocratic AI 明确提及 Dynamo（p10——“NVIDIA Dynamo/NIXL、SGLang、vLLM 或 TensorRT-LLM”）。这是非 NVIDIA 招聘信息首次明确提及 NIXL。
 - **触发状态：** 2026-10 周期设定条件：“如果 2026-11 有至少 10 条招聘信息提及 Dynamo，则建议在 mod-110 增加练习。” 实际为 **1/33，既低于触发条件（≥10），也低于三条招聘信息的证据门槛。未触发。**
@@ -157,7 +157,7 @@
 - **决定：** 列入观察清单。2026-12 重新测量。如果 Dynamo 出现在至少 10 条招聘信息中，或“解耦式服务”比例 ≥0.30，则下一周期建议在 mod-110 增加练习。
 - **学习资源：** [NVIDIA Dynamo docs](https://docs.nvidia.com/dynamo/)、[NVIDIA technical blog: Dynamo 1 production-ready](https://developer.nvidia.com/blog/nvidia-dynamo-1-production-ready)、[Rafay blog on disaggregated inference](https://rafay.co/ai-and-cloud-native-blog/nvidia-dynamo-turning-disaggregated-inference-into-a-production-system)。
 
-### OpenTelemetry GenAI 语义约定 — 招聘端仍无信号
+### OpenTelemetry GenAI 语义约定 — 招聘端仍无信号 {#opentelemetry-genai-semantic-conventions--still-no-posting-signal}
 
 - **样本频率：** **0/33**——连续第二个周期为零。Lambda（p18）、CoreWeave（p20）和 Etched（p11）提及基础 OpenTelemetry，但没有招聘信息明确引用 `gen_ai.*` 扩展约定。
 - **触发状态：** 2026-10 周期设定条件：“如果 2026-11 明确提及 OTel GenAI 约定的比例 ≥0.30，则建议在 mod-108 增加练习。” 实际：**0.00。未触发。**
