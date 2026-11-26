@@ -59,9 +59,9 @@ for(const p of pages){
 }
 for(const en of [false,true]){
  const prefix=en?'en/':''
- const hero={name:'AI Infrastructure Engineering',text:en?'Build and operate AI systems':'从基础设施到生产级 AI 系统',tagline:en?'10 modules, labs, exercises and three hands-on projects.':'十个核心模块、实验、练习与三个综合项目。中文导读与英文原文对照阅读。',actions:[{theme:'brand',text:en?'Start learning':'开始学习',link:url(bySource.get('GETTING_STARTED.md'),en)},{theme:'alt',text:en?'Curriculum':'课程大纲',link:url(bySource.get('CURRICULUM.md'),en)},{theme:'alt',text:en?'简体中文':'English',link:en?'/':'/en/'}]}
+ const hero={name:'AI Infrastructure Engineering',text:en?'Build and operate AI systems':'从基础设施到生产级 AI 系统',tagline:en?'10 modules, labs, exercises and three hands-on projects.':'十个核心模块、实验、练习与三个综合项目。中文译文与英文原文对照阅读。',actions:[{theme:'brand',text:en?'Start learning':'开始学习',link:url(bySource.get('GETTING_STARTED.md'),en)},{theme:'alt',text:en?'Curriculum':'课程大纲',link:url(bySource.get('CURRICULUM.md'),en)},{theme:'alt',text:en?'简体中文':'English',link:en?'/':'/en/'}]}
  const features=modules.slice(1).map((m,i)=>({title:String(i+1).padStart(2,'0')+' · '+(en?m[2]:m[1]),details:en?m[2]:m[3],link:url(bySource.get('lessons/'+m[0]+'/README.md'),en)}))
- const body=en?'## About this site\n\nEnglish pages reproduce the repository curriculum. Chinese pages currently provide localized study guides and clearly marked links to the complete English source.':'## 阅读说明\n\n英文站保留仓库课程正文。中文站提供导航、模块导读和对应英文全文入口；尚未完整翻译的页面会明确标注。'
+ const body=en?'## About this site\n\nEnglish pages reproduce the repository curriculum. Chinese pages provide translations where available, with links to the original English source. Any untranslated page is clearly marked.':'## 阅读说明\n\n英文站保留仓库课程正文。中文站提供对应译文及英文原文入口；如后续新增页面尚未翻译，将明确标注。'
  await write(prefix+'index',fm({layout:'home',title:'AI Infrastructure Engineering',hero,features})+body+'\n\n'+(en?'[Repository]':'[原始仓库]')+'('+repo+')\n')
 }
 console.log('Prepared '+pages.length+' document pairs and two home pages.')
