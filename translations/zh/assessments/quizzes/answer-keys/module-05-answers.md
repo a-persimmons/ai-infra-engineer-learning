@@ -90,7 +90,9 @@ Airflow 将*执行什么*（调度器的决定）与*如何、在哪里执行*�
 ## 问题 6
 **问题：** 解释 Airflow 中 `CeleryExecutor` 与 `LocalExecutor` 的区别。
 
-**答案：** - **LocalExecutor** 使用 Python 多进程，在与调度器*相同的机器*上并行运行任务。它受单台宿主机的 CPU、内存和进程限制，适合开发和中小型生产部署。
+**答案：**
+
+- **LocalExecutor** 使用 Python 多进程，在与调度器*相同的机器*上并行运行任务。它受单台宿主机的 CPU、内存和进程限制，适合开发和中小型生产部署。
 - **CeleryExecutor** 通过 Celery 消息代理（Redis 或 RabbitMQ）将任务分发到*远程工作机器池*。它支持水平扩展、跨主机故障隔离，适合高吞吐量生产工作负载。
 
 **解析：**
