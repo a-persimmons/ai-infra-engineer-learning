@@ -87,7 +87,7 @@
 
 ### PyTorch 生态系统
 - **PyTorch** - https://pytorch.org/
-- **PyTorch Lightning** - https://lightning.ai/ - High-level training framework
+- **PyTorch Lightning** - https://lightning.ai/ - 高级训练框架
 - **Accelerate** - https://huggingface.co/docs/accelerate/ - 简化分布式训练
 - **torchrun** - 内置分布式训练启动器
 
@@ -99,8 +99,8 @@
 
 ### 内存优化
 - **Flash Attention** - https://github.com/Dao-AILab/flash-attention
-- **xFormers** - https://github.com/facebookresearch/xformers - Memory-efficient operations
-- **bitsandbytes** - https://github.com/TimDettmers/bitsandbytes - 8-bit optimizers
+- **xFormers** - https://github.com/facebookresearch/xformers - 内存高效的运算
+- **bitsandbytes** - https://github.com/TimDettmers/bitsandbytes - 8 位优化器
 - **Apex** - https://github.com/NVIDIA/apex - NVIDIA 的混合精度工具
 
 ### 性能分析与监控
@@ -109,7 +109,7 @@
 - **PyTorch Profiler** - PyTorch 内置
 - **TensorBoard** - https://www.tensorflow.org/tensorboard - 可视化
 - **Weights & Biases** - https://wandb.ai/ - 实验追踪
-- **nvidia-ml-py** - https://pypi.org/project/nvidia-ml-py3/ - Python bindings for nvidia-smi
+- **nvidia-ml-py** - https://pypi.org/project/nvidia-ml-py3/ - nvidia-smi 的 Python 绑定
 
 ### 基础设施
 - **Ray** - https://ray.io/ - 分布式计算框架
